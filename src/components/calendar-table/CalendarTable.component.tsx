@@ -38,14 +38,6 @@ class CalendarTable extends Component<ICalendarTableProps, ICalendarTableState> 
         }
     }
 
-    public componentDidUpdate(prevProps: Readonly<ICalendarTableProps>): void {
-        if (prevProps.date !== this.props.date) {
-            this.setState({
-                shouldFocusDate: false
-            });
-        }
-    }
-
     public handleClickDate = (day: ICalendarDay): void => {
         switch (day.position) {
             case CalendarPosition.Prev:
@@ -56,18 +48,8 @@ class CalendarTable extends Component<ICalendarTableProps, ICalendarTableState> 
                 break;
             case CalendarPosition.Current:
                 this.props.onChange(DateHelper2.setDate(this.props.date, day.date));
+                break;
         }
-
-        this.setState({
-            shouldFocusDate: true
-        });
-    }
-
-    public handleOnChange = (date: Date) => {
-        this.props.onChange(date);
-        this.setState({
-            shouldFocusDate: false
-        });
     }
 
     public render(): JSX.Element {
@@ -77,7 +59,7 @@ class CalendarTable extends Component<ICalendarTableProps, ICalendarTableState> 
 
         return (
             <div className="cui-calendar-table">
-                <CalendarTableControls date={this.props.date} onChange={this.handleOnChange} />
+                <CalendarTableControls date={this.props.date} onChange={this.props.onChange} />
 
                 <table className="cui-calendar-table__table">
                     <thead>
@@ -96,7 +78,6 @@ class CalendarTable extends Component<ICalendarTableProps, ICalendarTableState> 
                                 <tr key={index} className="cui-calendar-table__table-row">
                                     {week.map((day, index) => {
                                         const isActive = day.date === this.props.date.getDate() && day.position === CalendarPosition.Current;
-                                        const isFocused = isActive && this.state.shouldFocusDate;
                                         const className = day.position !== CalendarPosition.Current ? "cui-calendar-table__table-data--other" : undefined;
 
                                         return (
@@ -104,7 +85,7 @@ class CalendarTable extends Component<ICalendarTableProps, ICalendarTableState> 
                                                 key={index}
                                                 className={className}
                                                 active={isActive}
-                                                focus={isFocused}
+                                                focus={isActive}
                                                 date={day.date}
                                                 onClick={() => this.handleClickDate(day)}
                                             />
@@ -121,45 +102,26 @@ class CalendarTable extends Component<ICalendarTableProps, ICalendarTableState> 
 
     private _handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "ArrowUp") {
-            this.setState({
-                shouldFocusDate: true
-            });
             this.props.onChange(DateHelper2.prevWeek(this.props.date));
         }
 
         if (event.key === "ArrowDown") {
-            this.setState({
-                shouldFocusDate: true
-            });
             this.props.onChange(DateHelper2.nextWeek(this.props.date));
         }
 
         if (event.key === "ArrowLeft") {
-            this.setState({
-                shouldFocusDate: true
-            });
             this.props.onChange(DateHelper2.prevDate(this.props.date));
         }
 
         if (event.key === "ArrowRight") {
-            this.setState({
-                shouldFocusDate: true
-            });
             this.props.onChange(DateHelper2.nextDate(this.props.date));
-
         }
 
         if (event.key === " ") {
-            this.setState({
-                shouldFocusDate: false
-            });
             this.props.onConfirm(this.props.date);
         }
 
         if (event.key === "Enter") {
-            this.setState({
-                shouldFocusDate: false
-            });
             this.props.onConfirmAndClose(this.props.date);
         }
     }

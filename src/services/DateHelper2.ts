@@ -14,19 +14,21 @@ export class DateHelper2 {
     }
 
     public static CalendarWeeks(date: Date, firstDay: Day): Array<Array<ICalendarDay>> {
-        const daysOfPrevMonth: Array<ICalendarDay> = this.daysOfPrevMonth(date, firstDay).map((date) => ({
+        const newDate = new Date(date);
+
+        const daysOfPrevMonth: Array<ICalendarDay> = this.daysOfPrevMonth(newDate, firstDay).map((date) => ({
             date: date,
             position: CalendarPosition.Prev
         }));
 
-        const daysOfCurrentMonth: Array<ICalendarDay> = this.daysOfMonth(date).map((date) => ({
+        const daysOfCurrentMonth: Array<ICalendarDay> = this.daysOfMonth(newDate).map((date) => ({
             date: date,
             position: CalendarPosition.Current
         }));
 
-        const daysOfNextMonth: Array<ICalendarDay> = this.daysOfNextMonth(date, firstDay).map((date) => ({
+        const daysOfNextMonth: Array<ICalendarDay> = this.daysOfNextMonth(newDate, firstDay).map((date) => ({
             date: date,
-            position: CalendarPosition.Prev
+            position: CalendarPosition.Next
         }));
 
         const allDays = [daysOfPrevMonth, daysOfCurrentMonth, daysOfNextMonth].flat();
@@ -59,7 +61,8 @@ export class DateHelper2 {
     }
 
     public static setDate(date: Date, day: number): Date {
-        return new Date(date.setDate(day));
+        const newDate = new Date(date);
+        return new Date(newDate.setDate(day));
     }
 
     public static prevDate(date: Date): Date {
@@ -87,14 +90,22 @@ export class DateHelper2 {
     }
 
     public static prevMonth(date: Date): Date {
-        const newDate = new Date(date)
+        const newDate = new Date(date);
+        const month = newDate.getMonth();
         newDate.setMonth(newDate.getMonth() - 1);
+        while (newDate.getMonth() === month) {
+            newDate.setDate(newDate.getDate() - 1);
+        }
         return newDate;
     }
 
     public static nextMonth(date: Date): Date {
-        const newDate = new Date(date)
+        const newDate = new Date(date);
+        const month = newDate.getMonth();
         newDate.setMonth(newDate.getMonth() + 1);
+        while (newDate.getMonth() === month) {
+            newDate.setDate(newDate.getDate() + 1);
+        }
         return newDate;
     }
 
@@ -129,8 +140,9 @@ export class DateHelper2 {
     }
 
     private static _splitDaysIntoWeeks(array: Array<ICalendarDay>) {
+        const newArray = [...array];
         const result = [];
-        for (let i = 0; i < array.length; i += 7) {
+        for (let i = 0; i < newArray.length; i += 7) {
             const chunk = array.slice(i, i + 7);
             result.push(chunk);
         }
