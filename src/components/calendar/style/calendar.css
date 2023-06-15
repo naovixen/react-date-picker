@@ -1,0 +1,14 @@
+.cui-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+}
+
+.cui-calendar__days-of-week {
+    font-size: 0.8rem;
+    color: #333;
+}
+
+.cui-calendar__other-days-of-month {
+    color: #888888;
+}

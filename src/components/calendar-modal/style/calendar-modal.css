@@ -1,0 +1,35 @@
+.cui-calendar-modal {
+    background: #fff;
+    padding: 0.5rem;
+}
+
+.cui-calendar-modal__buttons {
+    display: flex;
+    margin-top: 1rem;
+    justify-content: space-between;
+}
+
+.cui-calendar-modal__button {
+    background: #fff;
+    border: 1px solid #c3c3c3;
+    border-radius: 3px;
+    padding: 0.7rem 1rem;
+}
+
+.cui-calendar-modal__button:hover {
+    cursor: pointer;
+    background: #f4fafb;
+}
+
+.cui-calendar-modal__button--accent {
+    background: #0566a9;
+    color: #fff;
+    border: 1px solid #0566a9;
+    border-radius: 3px;
+    padding: 0.7rem 1rem;
+}
+
+.cui-calendar-modal__button--accent:hover {
+    cursor: pointer;
+    background: #0b4e7e;
+}

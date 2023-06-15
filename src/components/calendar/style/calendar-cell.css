@@ -1,0 +1,24 @@
+/* The cell wrapper, position and before selector css is used in place of 'aspect-ratio: 1;' as older browsers do not support it*/
+.cui-calendar-cell {
+    position: relative;
+}
+
+.cui-calendar-cell::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.cui-calendar-cell__content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

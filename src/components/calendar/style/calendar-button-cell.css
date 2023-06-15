@@ -1,0 +1,19 @@
+.cui-calendar-button-cell {
+    background: none;
+    border: none;
+    border-radius: 0.2rem;
+}
+
+.cui-calendar-button-cell:hover {
+    cursor: pointer;
+    background: #f4fafb;
+}
+
+.cui-calendar-button-cell--active {
+    background: #0566a9;
+    color: #ffffff;
+}
+
+.cui-calendar-button-cell--active:hover {
+    background: #0566a9;
+}

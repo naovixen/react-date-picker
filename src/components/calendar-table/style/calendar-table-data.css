@@ -1,0 +1,35 @@
+.cui-calendar-table-data {
+    position: relative;
+}
+
+.cui-calendar-table-data::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.cui-calendar-table-data__button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.cui-calendar-table-data__button:hover {
+    cursor: pointer;
+    background: #f4fafb;
+}
+
+.cui-calendar-table-data__button--active {
+    background: #0566a9;
+    color: #ffffff;
+}
+
+.cui-calendar-table-data__button--active:hover {
+    background: #0566a9;
+}

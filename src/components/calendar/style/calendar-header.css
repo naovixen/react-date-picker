@@ -1,0 +1,12 @@
+.cui-calendar-header__date {
+    grid-column: span 3;
+}
+
+.cui-calendar-header__date::before {
+    padding-top: calc(100% / 3)
+}
+
+.cui-calendar-header__button {
+    border: 1px solid #c3c3c3;
+    margin: 0.2rem;
+}
