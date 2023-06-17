@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import CalendarTable from "../calendar-table/CalendarTable.component";
+import Calendarheader from "./CalendarHeader.component";
+import CalendarTable from "./CalendarTable.component";
+import { Day } from "../../enums/Day";
 import { ICalendarModalProps } from "./interfaces/ICalendarModalProps";
 import { ICalendarModalState } from "./interfaces/ICalendarModalState";
 import "./style/calendar-modal.css";
@@ -12,42 +14,56 @@ class CalendarModal extends Component<ICalendarModalProps, ICalendarModalState> 
         super(props);
 
         this.state = {
-            date: new Date()
+            date: new Date(),
+            shouldFocusDate: true
         }
 
-        this._previousActiveElement = document.activeElement as HTMLElement;
+        this._previousActiveElement = null;
         this._modalRef = React.createRef();
     }
 
     public componentDidMount(): void {
+        this._previousActiveElement = document.activeElement as HTMLElement;
         document.addEventListener("keydown", this._handleKeyDown)
     }
 
     public componentWillUnmount(): void {
+        this._previousActiveElement?.focus();
         document.removeEventListener("keydown", this._handleKeyDown)
     }
 
-    public handleChange = (date: Date): void => {
-        this.setState({ date: date });
+    public handleClick = (date: Date): void => {
+        this.setState({
+            date: date,
+            shouldFocusDate: false
+        });
     }
 
-    public handleConfirmAndClose = (): void => {
-        this.props.onConfirm(this.state.date);
-        this.props.onClose();
+    public handleChange = (date: Date): void => {
+        this.setState({
+            date: date,
+            shouldFocusDate: true
+        });
     }
 
     public render(): JSX.Element {
+        const firstDayOfWeek = this.props.firstDayOfWeek || Day.Monday;
+
         return (
             <div ref={this._modalRef} className="cui-calendar-modal">
+                <Calendarheader date={this.state.date} onClick={this.handleClick} />
                 <CalendarTable
                     date={this.state.date}
+                    firstDayOfWeek={firstDayOfWeek}
+                    focusDate={this.state.shouldFocusDate}
                     onChange={this.handleChange}
                     onConfirm={this.props.onConfirm}
-                    onConfirmAndClose={this.handleConfirmAndClose}
-                    firstDayOfWeek={this.props.firstDayOfWeek} />
+                    onConfirmAndClose={this.props.onConfirmAndClose}
+                />
+
                 <div className="cui-calendar-modal__buttons">
                     <button className="cui-calendar-modal__button" onClick={this.props.onClose}>Cancel</button>
-                    <button className="cui-calendar-modal__button--accent" onClick={this.handleConfirmAndClose}>Confirm</button>
+                    <button className="cui-calendar-modal__button--accent" onClick={() => this.props.onConfirmAndClose(this.state.date)}>Confirm</button>
                 </div>
             </div>
         )

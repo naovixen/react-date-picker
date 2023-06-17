@@ -1,46 +1,40 @@
-import CalendarButtonCell from "./CalendarButtonCell.component";
-import CalendarCell from "./CalendarCell.component";
+import { DateHelper } from "../../services/DateHelper";
 import { ICalendarHeaderProps } from "./interfaces/ICalendarHeaderProps";
 import "./style/calendar-header.css";
-import { DateHelper2 } from "../../services/DateHelper2";
 
-const CalendarHeader = (props: ICalendarHeaderProps) => {
-
+const Calendarheader = (props: ICalendarHeaderProps) => {
     const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "short"
     }
 
     const onPrevYear = (): void => {
-        props.onChange(DateHelper2.prevYear(props.date));
+        props.onClick(DateHelper.sub(props.date, { years: 1 }));
     }
 
     const onNextYear = (): void => {
-        props.onChange(DateHelper2.nextYear(props.date));
+        props.onClick(DateHelper.add(props.date, { years: 1 }));
     }
 
     const onPrevMonth = (): void => {
-        props.onChange(DateHelper2.prevMonth(props.date));
+        props.onClick(DateHelper.sub(props.date, { months: 1 }));
     }
 
     const onNextMonth = (): void => {
-        props.onChange(DateHelper2.nextMonth(props.date));
+        props.onClick(DateHelper.add(props.date, { months: 1 }));
     }
 
     return (
-        <>
-            <CalendarButtonCell className="cui-calendar-header__button cui-calendar-header__button--left" onClick={onPrevYear}>{"<<"}</CalendarButtonCell>
-            <CalendarButtonCell className="cui-calendar-header__button cui-calendar-header__button--left" onClick={onPrevMonth}>{"<"}</CalendarButtonCell>
-            <CalendarCell className="cui-calendar-header__date">
-                <span aria-live="polite">
-                    {new Intl.DateTimeFormat(undefined, options).format(props.date)}
-                </span>
-            </CalendarCell>
-            <CalendarButtonCell className="cui-calendar-header__button cui-calendar-header__button--right" onClick={onNextMonth}>{">"}</CalendarButtonCell>
-            <CalendarButtonCell className="cui-calendar-header__button cui-calendar-header__button--right" onClick={onNextYear}>{">>"}</CalendarButtonCell>
-        </>
-
+        <div className="cui-calendar-header">
+            <button className="cui-calendar-header__button" onClick={onPrevYear}>{"<<"}</button>
+            <button className="cui-calendar-header__button" onClick={onPrevMonth}>{"<"}</button>
+            <p className="cui-calendar-header__date" aria-live="polite">
+                {new Intl.DateTimeFormat(undefined, options).format(props.date)}
+            </p>
+            <button className="cui-calendar-header__button" onClick={onNextMonth}>{">"}</button>
+            <button className="cui-calendar-header__button" onClick={onNextYear}>{">>"}</button>
+        </div>
     )
 }
 
-export default CalendarHeader;
+export default Calendarheader;

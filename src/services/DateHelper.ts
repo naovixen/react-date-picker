@@ -1,137 +1,320 @@
-const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+import { Day } from "../enums/Day";
 
-export const shiftArrayBackward = (array: Array<any>, amount: number) => {
-    return array.slice(amount).concat(array.slice(0, amount))
+interface IDateSetOptions {
+    year?: number;
+    month?: number;
+    week?: number;
+    day?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+    milliseconds?: number;
 }
 
-export const shiftArrayForward = (array: Array<any>, amount: number) => {
-    return array.slice(array.length - amount).concat(array.slice(0, array.length - amount));
+interface IDateOptions {
+    years?: number;
+    months?: number;
+    weeks?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
 }
 
-export const toUTC = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-export const startOfMonth = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), 1);
-export const endOfMonth = (date: Date): Date => new Date(date.getFullYear(), date.getMonth() + 1, 0);
-export const daysOfMonthCount = (date: Date): number => {
-    const msPerDay = 1000 * 60 * 60 * 24;
-    const start = startOfMonth(date);
-    const end = endOfMonth(date);
-
-    // Need to convert to UTC to ensure that there are no issues with daylight saving time
-    return Math.floor((toUTC(end) - toUTC(start)) / msPerDay) + 1;
+export interface IDayInfo {
+    number: number;
+    month: number;
 }
 
-export const getDaysOfMonth = (date: Date): number[] => {
-    let days = [];
-    for (let i = 1; i <= daysOfMonthCount(date); i++) {
-        days.push(i);
+export class DateHelper {
+    private static _second = 1000;
+    private static _minute = 60 * this._second;
+    private static _hour = 60 * this._minute;
+    private static _daysInWeek = 7;
+
+    public static isLeapYear = (year: number) => {
+        return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
     }
-    return days;
-}
 
-export const prevDay = (date: Date) => {
-    const newDate = new Date(date);
-    const day = newDate.getDate();
-    newDate.setDate(newDate.getDate() - 1);
-    while (newDate.getDate() === day) {
-        newDate.setHours(newDate.getHours() - 1);
+    public static getDaysOfWeekStrings = (firstDayOfWeek: Day): Array<string> => {
+        // Replace for i18n
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        return this._shiftArrayBackward(days, firstDayOfWeek);
     }
-    return newDate;
-}
 
-export const nextDay = (date: Date) => {
-    const newDate = new Date(date);
-    const day = newDate.getDate();
-    newDate.setDate(newDate.getDate() + 1);
-    while (newDate.getDate() === day) {
-        newDate.setHours(newDate.getHours() + 1);
+    public static getDaysInMonth = (date: Date): Array<number> => {
+        let days = [];
+        for (let i = 1; i <= this._getDaysInMonthCount(date); i++) {
+            days.push(i);
+        }
+        return days;
     }
-    return newDate;
 
-}
-
-export const prevWeek = (date: Date) => {
-    const newDate = new Date(date);
-    const day = newDate.getDate();
-    newDate.setDate(newDate.getDate() - 7);
-    while (newDate.getDate() === day) {
-        newDate.setHours(newDate.getHours() - 1);
+    public static getSuffixedDaysInPrevMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
+        const remaining = this._getSuffixedDaysInPrevMonthCount(date, firstDayOfWeek);
+        const end = this._getEndOfMonth(this.sub(date, { months: 1 })).getDate();
+        const start = end - remaining + 1;
+        let days = [];
+        for (let i = start; i <= end; i++) {
+            days.push(i);
+        }
+        return days;
     }
-    return newDate;
-}
 
-
-export const prevMonth = (date: Date): Date => {
-    const newDate = new Date(date);
-    const month = newDate.getMonth();
-    newDate.setMonth(newDate.getMonth() - 1);
-    while (newDate.getMonth() === month) {
-        newDate.setDate(newDate.getDate() - 1);
+    public static getPrefixedDaysInNextMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
+        const remaining = this._getPrefixedDaysInNextMonthCount(date, firstDayOfWeek);
+        let days = [];
+        for (let i = 1; i <= remaining; i++) {
+            days.push(i);
+        }
+        return days;
     }
-    return newDate;
-}
 
-export const nextMonth = (date: Date): Date => {
-    const newDate = new Date(date);
-    const month = newDate.getMonth();
-    newDate.setMonth(newDate.getMonth() + 1);
-    while (newDate.getMonth() === month) {
-        newDate.setDate(newDate.getDate() + 1);
+    public static getWeeksInMonth = (date: Date, firstDayOfWeek: Day): Array<Array<IDayInfo>> => {
+        const newDate = new Date(date);
+        const prevMonth = this.sub(newDate, { months: 1 }).getMonth();
+        const nextMonth = this.add(newDate, { months: 1 }).getMonth();
+
+        const daysOfPrevMonth: Array<IDayInfo> = this.getSuffixedDaysInPrevMonth(newDate, firstDayOfWeek).map((day) => ({
+            number: day,
+            month: prevMonth
+        }));
+
+        const daysOfCurrentMonth: Array<IDayInfo> = this.getDaysInMonth(newDate).map((day) => ({
+            number: day,
+            month: newDate.getMonth()
+        }));
+
+        const daysOfNextMonth: Array<IDayInfo> = this.getPrefixedDaysInNextMonth(newDate, firstDayOfWeek).map((day) => ({
+            number: day,
+            month: nextMonth
+        }));
+
+        const allDays = [daysOfPrevMonth, daysOfCurrentMonth, daysOfNextMonth].flat();
+        return this._splitArrayIntoChunks(allDays, this._daysInWeek);
     }
-    return newDate;
-}
 
-export const prevYear = (date: Date): Date => {
-    return new Date(date.setFullYear(date.getFullYear() - 1));
-}
 
-export const nextYear = (date: Date): Date => {
-    return new Date(date.setFullYear(date.getFullYear() + 1));
-}
+    public static set = (date: Date, options: IDateSetOptions): Date => {
+        let newDate = new Date(date);
 
-export const setDate = (date: Date, day: number): Date => {
-    return new Date(date.setDate(day));
-}
+        if (options.day !== undefined) {
+            newDate.setDate(options.day);
+        }
 
-export const prefixArray = (firstDay: number): number[] => {
-    const array = [...Array(7).keys()];
-    return shiftArrayForward(array, firstDay);
-}
-
-export const suffixArray = (firstDay: number): number[] => {
-    const array = [...Array(7).keys()];
-    return shiftArrayBackward(array, firstDay);
-}
-
-export const daysOfprevMonthCount = (date: Date, firstDay: number): number => {
-    return prefixArray(firstDay)[startOfMonth(date).getDay()];
-}
-
-export const daysOfNextMonthCount = (date: Date, firstDay: number): number => {
-    return suffixArray(firstDay)[6 - endOfMonth(date).getDay()];
-}
-
-export const getDaysOfprevMonth = (date: Date, firstDay: number): number[] => {
-    const remaining = daysOfprevMonthCount(date, firstDay);
-    const end = endOfMonth(prevMonth(date)).getDate();
-    const start = end - remaining + 1;
-    let days = [];
-    for (let i = start; i <= end; i++) {
-        days.push(i);
+        return newDate;
     }
-    return days;
-}
 
-export const getDaysOfNextMonth = (date: Date, firstDay: number): number[] => {
-    const remaining = daysOfNextMonthCount(date, firstDay);
-    let days = [];
-    for (let i = 1; i <= remaining; i++) {
-        days.push(i);
+    public static add = (date: Date, options: IDateOptions): Date => {
+        let newDate = new Date(date);
+
+        if (options.years !== undefined) {
+            newDate = this._addYears(newDate, options.years);
+        }
+
+        if (options.months !== undefined) {
+            newDate = this._addMonths(newDate, options.months);
+        }
+
+        if (options.weeks !== undefined) {
+            newDate = this._addWeeks(newDate, options.weeks);
+        }
+
+        if (options.days !== undefined) {
+            newDate = this._addDays(newDate, options.days);
+        }
+
+        if (options.hours !== undefined) {
+            newDate = this._addHours(newDate, options.hours);
+        }
+
+        if (options.minutes !== undefined) {
+            newDate = this._addMinutes(newDate, options.minutes);
+        }
+
+        if (options.seconds !== undefined) {
+            newDate = this._addSeconds(newDate, options.seconds);
+        }
+
+        return newDate;
     }
-    return days;
+
+    public static sub = (date: Date, options: IDateOptions): Date => {
+        let newDate = new Date(date);
+
+        if (options.years !== undefined) {
+            newDate = this._subtractYears(newDate, options.years);
+        }
+
+        if (options.months !== undefined) {
+            newDate = this._subtractMonths(newDate, options.months);
+        }
+
+        if (options.weeks !== undefined) {
+            newDate = this._subtractWeeks(newDate, options.weeks);
+        }
+
+        if (options.days !== undefined) {
+            newDate = this._subtractDays(newDate, options.days);
+        }
+
+        if (options.hours !== undefined) {
+            newDate = this._subtractHours(newDate, options.hours);
+        }
+
+        if (options.minutes !== undefined) {
+            newDate = this._subtractMinutes(newDate, options.minutes);
+        }
+
+        if (options.seconds !== undefined) {
+            newDate = this._subtractSeconds(newDate, options.seconds);
+        }
+
+        return newDate;
+    }
+
+    private static _orderPrefixedDaysOfWeek(firstDayOfWeek: Day): Array<number> {
+        const array = [...Array(this._daysInWeek).keys()];
+        return this._shiftArrayForward(array, firstDayOfWeek);
+    }
+
+    private static _orderSuffixedDaysOfWeek(firstDayOfWeek: Day): Array<number> {
+        const array = [...Array(this._daysInWeek).keys()];
+        return this._shiftArrayBackward(array, firstDayOfWeek);
+    }
+
+    private static _getSuffixedDaysInPrevMonthCount(date: Date, firstDayOfWeek: number): number {
+        const index = this._orderPrefixedDaysOfWeek(firstDayOfWeek)
+        return index[this._getStartOfMonth(date).getDay()];
+    }
+
+    private static _getPrefixedDaysInNextMonthCount(date: Date, firstDayOfWeek: number): number {
+        const index = this._orderSuffixedDaysOfWeek(firstDayOfWeek)
+        return index[6 - this._getEndOfMonth(date).getDay()];
+    }
+
+    private static _getStartOfMonth(date: Date): Date {
+        const newDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        return newDate;
+    }
+
+    private static _getEndOfMonth(date: Date): Date {
+        const newDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        return newDate;
+    }
+
+    private static _getDaysInMonthCount = (date: Date): number => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+
+        return [31, (this.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    }
+
+    private static _subtractYears = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setFullYear(newDate.getFullYear() - amount);
+        return newDate;
+    }
+
+    private static _addYears = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setFullYear(newDate.getFullYear() + amount);
+        return newDate;
+    }
+
+    private static _subtractMonths = (date: Date, amount: number): Date => {
+        const newDate = new Date(date);
+        const day = newDate.getDate();
+        newDate.setDate(1);
+        newDate.setMonth(newDate.getMonth() - amount);
+        newDate.setDate(Math.min(day, this._getDaysInMonthCount(newDate)));
+        return newDate;
+    }
+
+    private static _addMonths = (date: Date, amount: number): Date => {
+        const newDate = new Date(date);
+        const day = newDate.getDate();
+        newDate.setDate(1);
+        newDate.setMonth(newDate.getMonth() + amount);
+        newDate.setDate(Math.min(day, this._getDaysInMonthCount(newDate)));
+        return newDate;
+    }
+
+    private static _subtractWeeks = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setDate(newDate.getDate() - (amount * this._daysInWeek));
+        return newDate;
+    }
+
+    private static _addWeeks = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setDate(newDate.getDate() + (amount * this._daysInWeek));
+        return newDate;
+    }
+
+    private static _subtractDays = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setDate(newDate.getDate() - amount);
+        return newDate;
+    }
+
+    private static _addDays = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setDate(newDate.getDate() + amount);
+        return newDate;
+    }
+
+    private static _subtractHours = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setTime(newDate.getTime() - (amount * this._hour));
+        return newDate;
+    }
+
+    private static _addHours = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setTime(newDate.getTime() + (amount * this._hour));
+        return newDate;
+    }
+
+    private static _subtractMinutes = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setTime(newDate.getTime() - (amount * this._minute));
+        return newDate;
+    }
+
+    private static _addMinutes = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setTime(newDate.getTime() + (amount * this._minute));
+        return newDate;
+    }
+
+    private static _subtractSeconds = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setTime(newDate.getTime() - (amount * this._second));
+        return newDate;
+    }
+
+    private static _addSeconds = (date: Date, amount: number): Date => {
+        const newDate = new Date(date)
+        newDate.setTime(newDate.getTime() + (amount * this._second));
+        return newDate;
+    }
+
+    private static _shiftArrayBackward(array: Array<any>, amount: number) {
+        return array.slice(amount).concat(array.slice(0, amount))
+    }
+
+    private static _shiftArrayForward(array: Array<any>, amount: number) {
+        return array.slice(array.length - amount).concat(array.slice(0, array.length - amount));
+    }
+
+    private static _splitArrayIntoChunks<T>(array: Array<T>, chunkSize: number): Array<Array<T>> {
+        const newArray = [...array];
+        const result = [];
+        for (let i = 0; i < newArray.length; i += chunkSize) {
+            const chunk = array.slice(i, i + chunkSize);
+            result.push(chunk);
+        }
+        return result;
+    }
 }
-
-export const getDaysOfWeek = (firstDay: number): string[] => {
-    return shiftArrayBackward(daysOfWeek, firstDay);
-}
-
-

@@ -1,4 +1,4 @@
-export interface ICalendarTableDataProps {
+export interface ICalendarButtonsProps {
     className?: string;
     focus: boolean;
     active: boolean;

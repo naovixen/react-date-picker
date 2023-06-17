@@ -1,8 +1,7 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import DateInput from "./components/date-input/DateInput.component";
+import CalendarModal from "./components/calendar/CalendarModal.component";
 import { Day } from "./enums/Day";
-import CalendarModal from "./components/calendar-modal/CalendarModal.component";
-
 
 interface IAppState {
     date: Date
@@ -17,10 +16,21 @@ class App extends Component<{}, IAppState> {
         }
     }
 
-    dateChange = (date: Date) => {
+    handleConfirm = (date: Date) => {
         this.setState({
             date: date
         });
+    }
+
+    handleConfirmAndClose = (date: Date) => {
+        this.setState({
+            date: date
+        });
+        console.log("close");
+    }
+
+    handleClose = () => {
+        console.log("close");
     }
 
     render() {
@@ -37,16 +47,12 @@ class App extends Component<{}, IAppState> {
             <>
                 <p>React Calendar</p>
                 <p>Selected Date: {new Intl.DateTimeFormat(undefined, options).format(this.state.date)}</p>
-                <CalendarModal onConfirm={this.dateChange} onClose={() => console.log("cancel")} firstDayOfWeek={Day.Monday} />
-
+                <CalendarModal onConfirm={this.handleConfirm} onConfirmAndClose={this.handleConfirmAndClose} onClose={this.handleClose} firstDayOfWeek={Day.Monday} />
                 <p>React Date Input</p>
                 <DateInput />
-
             </>
         )
     }
-
-
 }
 
 export default App

@@ -1,0 +1,28 @@
+.cui-calendar-table {
+    width: 100%;
+}
+
+.cui-calendar-table__row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+}
+
+.cui-calendar-table__header {
+    font-size: 0.8rem;
+    color: #333;
+}
+
+.cui-calendar-table__data {
+    position: relative;
+}
+
+.cui-calendar-table__data::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.cui-calendar-table__data--other {
+    color: #888888;
+}

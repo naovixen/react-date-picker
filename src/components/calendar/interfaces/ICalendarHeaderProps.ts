@@ -1,4 +1,4 @@
 export interface ICalendarHeaderProps {
     date: Date;
-    onChange: (date: Date) => void;
+    onClick: (date: Date) => void;
 }
