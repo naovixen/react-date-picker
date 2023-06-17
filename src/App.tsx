@@ -4,7 +4,8 @@ import CalendarModal from "./components/calendar/CalendarModal.component";
 import { Day } from "./enums/Day";
 
 interface IAppState {
-    date: Date
+    date: Date;
+    showCalendar: Boolean;
 }
 
 class App extends Component<{}, IAppState> {
@@ -12,7 +13,8 @@ class App extends Component<{}, IAppState> {
         super(props)
 
         this.state = {
-            date: new Date()
+            date: new Date(),
+            showCalendar: false
         }
     }
 
@@ -24,13 +26,23 @@ class App extends Component<{}, IAppState> {
 
     handleConfirmAndClose = (date: Date) => {
         this.setState({
-            date: date
+            date: date,
+            showCalendar: false
         });
         console.log("close");
     }
 
     handleClose = () => {
-        console.log("close");
+        this.setState({
+            showCalendar: false
+        });
+    }
+
+    showCalendar = () => {
+        console.log(this.state.showCalendar)
+        this.setState({
+            showCalendar: true
+        });
     }
 
     render() {
@@ -47,9 +59,16 @@ class App extends Component<{}, IAppState> {
             <>
                 <p>React Calendar</p>
                 <p>Selected Date: {new Intl.DateTimeFormat(undefined, options).format(this.state.date)}</p>
-                <CalendarModal onConfirm={this.handleConfirm} onConfirmAndClose={this.handleConfirmAndClose} onClose={this.handleClose} firstDayOfWeek={Day.Monday} />
+                <button onClick={this.showCalendar}>Show Calendar</button>
+                {this.state.showCalendar ? (
+                    <CalendarModal
+                        onConfirm={this.handleConfirm}
+                        onConfirmAndClose={this.handleConfirmAndClose}
+                        onClose={this.handleClose}
+                        firstDayOfWeek={Day.Sunday}
+                    />
+                ) : null}
                 <p>React Date Input</p>
-                <DateInput />
             </>
         )
     }

@@ -95,6 +95,7 @@ class CalendarTable extends Component<ICalendarTableProps> {
 
         if (event.key === "Enter" && this.props.onConfirmAndClose !== undefined) {
             this.props.onConfirmAndClose(this.props.date);
+            event.preventDefault();
         }
     }
 }
