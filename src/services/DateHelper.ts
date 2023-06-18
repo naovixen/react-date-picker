@@ -3,12 +3,7 @@ import { Day } from "../enums/Day";
 interface IDateSetOptions {
     year?: number;
     month?: number;
-    week?: number;
     day?: number;
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-    milliseconds?: number;
 }
 
 interface IDateOptions {
@@ -96,6 +91,14 @@ export class DateHelper {
 
     public static set = (date: Date, options: IDateSetOptions): Date => {
         let newDate = new Date(date);
+
+        if (options.year !== undefined) {
+            newDate.setFullYear(options.year);
+        }
+
+        if (options.month !== undefined) {
+            newDate.setMonth(options.month);
+        }
 
         if (options.day !== undefined) {
             newDate.setDate(options.day);
