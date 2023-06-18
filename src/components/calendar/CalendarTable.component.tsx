@@ -56,6 +56,7 @@ class CalendarTable extends Component<ICalendarTableProps> {
                                 return (
                                     <td key={dayIndex} className="cui-calendar-table__data">
                                         <CalendarButton
+                                            key={dayIndex}
                                             className={className}
                                             active={isActive}
                                             focus={isFocused}

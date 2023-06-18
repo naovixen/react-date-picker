@@ -92,16 +92,16 @@ export class DateHelper {
     public static set = (date: Date, options: IDateSetOptions): Date => {
         let newDate = new Date(date);
 
-        if (options.year !== undefined) {
-            newDate.setFullYear(options.year);
+        if (options.day !== undefined) {
+            newDate.setDate(options.day);
         }
 
         if (options.month !== undefined) {
             newDate.setMonth(options.month);
         }
 
-        if (options.day !== undefined) {
-            newDate.setDate(options.day);
+        if (options.year !== undefined) {
+            newDate.setFullYear(options.year);
         }
 
         return newDate;
@@ -110,32 +110,33 @@ export class DateHelper {
     public static add = (date: Date, options: IDateOptions): Date => {
         let newDate = new Date(date);
 
-        if (options.years !== undefined) {
-            newDate = this._addYears(newDate, options.years);
-        }
 
-        if (options.months !== undefined) {
-            newDate = this._addMonths(newDate, options.months);
-        }
-
-        if (options.weeks !== undefined) {
-            newDate = this._addWeeks(newDate, options.weeks);
-        }
-
-        if (options.days !== undefined) {
-            newDate = this._addDays(newDate, options.days);
-        }
-
-        if (options.hours !== undefined) {
-            newDate = this._addHours(newDate, options.hours);
+        if (options.seconds !== undefined) {
+            newDate = this._addSeconds(newDate, options.seconds);
         }
 
         if (options.minutes !== undefined) {
             newDate = this._addMinutes(newDate, options.minutes);
         }
 
-        if (options.seconds !== undefined) {
-            newDate = this._addSeconds(newDate, options.seconds);
+        if (options.hours !== undefined) {
+            newDate = this._addHours(newDate, options.hours);
+        }
+
+        if (options.days !== undefined) {
+            newDate = this._addDays(newDate, options.days);
+        }
+
+        if (options.weeks !== undefined) {
+            newDate = this._addWeeks(newDate, options.weeks);
+        }
+
+        if (options.months !== undefined) {
+            newDate = this._addMonths(newDate, options.months);
+        }
+
+        if (options.years !== undefined) {
+            newDate = this._addYears(newDate, options.years);
         }
 
         return newDate;
@@ -144,32 +145,32 @@ export class DateHelper {
     public static sub = (date: Date, options: IDateOptions): Date => {
         let newDate = new Date(date);
 
-        if (options.years !== undefined) {
-            newDate = this._subtractYears(newDate, options.years);
-        }
-
-        if (options.months !== undefined) {
-            newDate = this._subtractMonths(newDate, options.months);
-        }
-
-        if (options.weeks !== undefined) {
-            newDate = this._subtractWeeks(newDate, options.weeks);
-        }
-
-        if (options.days !== undefined) {
-            newDate = this._subtractDays(newDate, options.days);
-        }
-
-        if (options.hours !== undefined) {
-            newDate = this._subtractHours(newDate, options.hours);
+        if (options.seconds !== undefined) {
+            newDate = this._subtractSeconds(newDate, options.seconds);
         }
 
         if (options.minutes !== undefined) {
             newDate = this._subtractMinutes(newDate, options.minutes);
         }
 
-        if (options.seconds !== undefined) {
-            newDate = this._subtractSeconds(newDate, options.seconds);
+        if (options.hours !== undefined) {
+            newDate = this._subtractHours(newDate, options.hours);
+        }
+
+        if (options.days !== undefined) {
+            newDate = this._subtractDays(newDate, options.days);
+        }
+
+        if (options.weeks !== undefined) {
+            newDate = this._subtractWeeks(newDate, options.weeks);
+        }
+
+        if (options.months !== undefined) {
+            newDate = this._subtractMonths(newDate, options.months);
+        }
+
+        if (options.years !== undefined) {
+            newDate = this._subtractYears(newDate, options.years);
         }
 
         return newDate;
