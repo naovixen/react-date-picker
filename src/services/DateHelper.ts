@@ -21,7 +21,7 @@ interface IDateOptions {
     seconds?: number;
 }
 
-export interface IDayInfo {
+interface IDayInfo {
     number: number;
     month: number;
 }
@@ -93,7 +93,6 @@ export class DateHelper {
         const allDays = [daysOfPrevMonth, daysOfCurrentMonth, daysOfNextMonth].flat();
         return this._splitArrayIntoChunks(allDays, this._daysInWeek);
     }
-
 
     public static set = (date: Date, options: IDateSetOptions): Date => {
         let newDate = new Date(date);

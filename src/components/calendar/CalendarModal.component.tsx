@@ -51,7 +51,7 @@ class CalendarModal extends Component<ICalendarModalProps, ICalendarModalState> 
                     <button className="cui-calendar-modal__button--accent" onClick={() => this.props.onConfirmAndClose(this.state.date)}>Confirm</button>
                 </div>
             </FocusTrap>
-        )
+        );
     }
 }
 

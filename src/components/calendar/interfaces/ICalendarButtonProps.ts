@@ -1,7 +1,8 @@
-export interface ICalendarButtonsProps {
+import React from "react";
+
+export interface ICalendarButtonsProps extends React.PropsWithChildren {
     className?: string;
     focus: boolean;
     active: boolean;
-    date: number;
     onClick: () => void;
 }

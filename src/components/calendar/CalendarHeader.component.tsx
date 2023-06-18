@@ -34,7 +34,7 @@ const Calendarheader = (props: ICalendarHeaderProps) => {
             <button className="cui-calendar-header__button" onClick={onNextMonth}>{">"}</button>
             <button className="cui-calendar-header__button" onClick={onNextYear}>{">>"}</button>
         </div>
-    )
+    );
 }
 
 export default Calendarheader;

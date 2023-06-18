@@ -38,10 +38,10 @@ class App extends Component<{}, IAppState> {
         });
     }
 
-    showCalendar = () => {
+    toggleCalendar = () => {
         console.log(this.state.showCalendar)
         this.setState({
-            showCalendar: true
+            showCalendar: !this.state.showCalendar
         });
     }
 
@@ -59,15 +59,15 @@ class App extends Component<{}, IAppState> {
             <>
                 <p>React Calendar</p>
                 <p>Selected Date: {new Intl.DateTimeFormat(undefined, options).format(this.state.date)}</p>
-                <button onClick={this.showCalendar}>Show Calendar</button>
-                {this.state.showCalendar ? (
+                <button onClick={this.toggleCalendar}>Show Calendar</button>
+                {this.state.showCalendar && (
                     <CalendarModal
                         onConfirm={this.handleConfirm}
                         onConfirmAndClose={this.handleConfirmAndClose}
                         onClose={this.handleClose}
                         firstDayOfWeek={Day.Sunday}
                     />
-                ) : null}
+                )}
                 <p>React Date Input</p>
             </>
         )

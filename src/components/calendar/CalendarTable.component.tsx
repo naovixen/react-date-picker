@@ -5,16 +5,16 @@ import { ICalendarTableProps } from "./interfaces/ICalendarTableProps";
 import "./style/calendar-table.css";
 
 class CalendarTable extends Component<ICalendarTableProps> {
-    private tableBodyRef: React.RefObject<HTMLTableSectionElement>;
+    private tableRef: React.RefObject<HTMLTableSectionElement>;
 
     constructor(props: ICalendarTableProps) {
         super(props);
 
-        this.tableBodyRef = React.createRef();
+        this.tableRef = React.createRef();
     }
 
     public componentDidMount(): void {
-        const table = this.tableBodyRef.current;
+        const table = this.tableRef.current;
 
         if (table !== null) {
             table.addEventListener("keydown", this._handleKeyDown)
@@ -22,7 +22,7 @@ class CalendarTable extends Component<ICalendarTableProps> {
     }
 
     public componentWillUnmount(): void {
-        const table = this.tableBodyRef.current;
+        const table = this.tableRef.current;
 
         if (table !== null) {
             table.removeEventListener("keydown", this._handleKeyDown)
@@ -37,16 +37,16 @@ class CalendarTable extends Component<ICalendarTableProps> {
             <table className="cui-calendar-table">
                 <thead>
                     <tr className="cui-calendar-table__row">
-                        {days.map((day, index) => (
-                            <th key={index} className="cui-calendar-table__header">{day}</th>
+                        {days.map((day, dayIndex) => (
+                            <th key={dayIndex} className="cui-calendar-table__header">{day}</th>
                         ))}
                     </tr>
                 </thead>
 
-                <tbody ref={this.tableBodyRef}>
-                    {weeks.map((week, index) => (
-                        <tr key={index} className="cui-calendar-table__row">
-                            {week.map((day, index) => {
+                <tbody ref={this.tableRef}>
+                    {weeks.map((week, weekIndex) => (
+                        <tr key={weekIndex} className="cui-calendar-table__row">
+                            {week.map((day, dayIndex) => {
                                 const currentMonth = this.props.date.getMonth();
                                 const currentDay = this.props.date.getDate();
                                 const isActive = day.number === currentDay && day.month === currentMonth;
@@ -54,22 +54,22 @@ class CalendarTable extends Component<ICalendarTableProps> {
                                 const className = day.month !== currentMonth ? "cui-calendar-table__data--other" : undefined;
 
                                 return (
-                                    <td key={index} className="cui-calendar-table__data">
+                                    <td key={dayIndex} className="cui-calendar-table__data">
                                         <CalendarButton
                                             className={className}
                                             active={isActive}
                                             focus={isFocused}
-                                            date={day.number}
-                                            onClick={() => this.props.onChange(DateHelper.set(this.props.date, { month: day.month, day: day.number }))}
-                                        />
+                                            onClick={() => this.props.onChange(DateHelper.set(this.props.date, { month: day.month, day: day.number }))}>
+                                            {day.number}
+                                        </CalendarButton>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
                     ))}
                 </tbody>
             </table>
-        )
+        );
     }
 
     private _handleKeyDown = (event: KeyboardEvent) => {

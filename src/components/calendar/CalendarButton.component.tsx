@@ -20,10 +20,9 @@ class CalendarButton extends Component<ICalendarButtonsProps> {
                 className={`cui-calendar-button ${propClass} ${activeClass}`}
                 onClick={this.props.onClick}
                 tabIndex={tabIndex}>
-                {this.props.date}
+                {this.props.children}
             </button>
-
-        )
+        );
     }
 }
 

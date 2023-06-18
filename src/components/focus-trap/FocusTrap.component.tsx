@@ -38,7 +38,6 @@ class FocusTrap extends Component<IFocusTrapProps> {
         this._previousActiveElement?.focus();
         document.removeEventListener("keydown", this._handleKeyDown);
         document.removeEventListener("mousedown", this._handleMouseDown);
-
     }
 
     public render(): JSX.Element {
@@ -48,7 +47,7 @@ class FocusTrap extends Component<IFocusTrapProps> {
             <div className={className} ref={this._ref}>
                 {this.props.children}
             </div>
-        )
+        );
     }
 
     private _handleKeyDown = (event: KeyboardEvent) => {
@@ -57,37 +56,33 @@ class FocusTrap extends Component<IFocusTrapProps> {
         }
 
         if (event.key === 'Tab') {
+            const isFirstElementActive = document.activeElement === this._firstFocusableElement;
+            const isLastElementActive = document.activeElement === this._lastFocusableElement;
+
             if (event.shiftKey) {
-                if (document.activeElement === this._firstFocusableElement) {
+                if (isFirstElementActive) {
                     this._lastFocusableElement?.focus();
                     event.preventDefault();
                 }
-            } else {
-                if (document.activeElement === this._lastFocusableElement) {
-                    this._firstFocusableElement?.focus();
-                    event.preventDefault();
-                }
+            } else if (isLastElementActive) {
+                this._firstFocusableElement?.focus();
+                event.preventDefault();
             }
         }
     }
 
     private _handleMouseDown = (event: MouseEvent) => {
-        if (!this.props.clickOutsideDeactivates) {
+        if (this._ref.current === null || !(event.target instanceof Element)) {
             return;
         }
 
-        if (this._ref.current === null) {
-            return;
-        }
+        const isTargetOutsideElement = !this._ref.current.contains(event.target);
+        const isTargetPreviousActiveElement = this._previousActiveElement?.contains(event.target);
 
-        if (!(event.target instanceof Element)) {
-            return;
-        }
-
-        if (!this._ref.current.contains(event.target)) {
+        if (this.props.clickOutsideDeactivates && isTargetOutsideElement && !isTargetPreviousActiveElement) {
             this.props.onDeactivate();
         }
     }
 }
 
-export default FocusTrap
+export default FocusTrap;
