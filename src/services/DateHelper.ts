@@ -92,12 +92,8 @@ export class DateHelper {
     public static set = (date: Date, options: IDateSetOptions): Date => {
         let newDate = new Date(date);
 
-        if (options.day !== undefined) {
-            newDate.setDate(options.day);
-        }
-
-        if (options.month !== undefined) {
-            newDate.setMonth(options.month);
+        if (options.month !== undefined || options.day !== undefined) {
+            newDate.setMonth(options.month ?? newDate.getMonth(), options.day ?? newDate.getDate());
         }
 
         if (options.year !== undefined) {
@@ -109,7 +105,6 @@ export class DateHelper {
 
     public static add = (date: Date, options: IDateOptions): Date => {
         let newDate = new Date(date);
-
 
         if (options.seconds !== undefined) {
             newDate = this._addSeconds(newDate, options.seconds);
