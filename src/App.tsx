@@ -65,7 +65,7 @@ class App extends Component<{}, IAppState> {
                         onConfirm={this.handleConfirm}
                         onConfirmAndClose={this.handleConfirmAndClose}
                         onClose={this.handleClose}
-                        firstDayOfWeek={Day.Sunday}
+                        firstDayOfWeek={Day.Monday}
                     />
                 )}
                 <p>React Date Input</p>
