@@ -5,16 +5,16 @@ import { ICalendarTableProps } from "./interfaces/ICalendarTableProps";
 import "./style/calendar-table.css";
 
 class CalendarTable extends Component<ICalendarTableProps> {
-    private tableRef: React.RefObject<HTMLTableSectionElement>;
+    private _tableRef: React.RefObject<HTMLTableSectionElement>;
 
     constructor(props: ICalendarTableProps) {
         super(props);
 
-        this.tableRef = React.createRef();
+        this._tableRef = React.createRef();
     }
 
     public componentDidMount(): void {
-        const table = this.tableRef.current;
+        const table = this._tableRef.current;
 
         if (table !== null) {
             table.addEventListener("keydown", this._handleKeyDown)
@@ -22,7 +22,7 @@ class CalendarTable extends Component<ICalendarTableProps> {
     }
 
     public componentWillUnmount(): void {
-        const table = this.tableRef.current;
+        const table = this._tableRef.current;
 
         if (table !== null) {
             table.removeEventListener("keydown", this._handleKeyDown)
@@ -43,7 +43,7 @@ class CalendarTable extends Component<ICalendarTableProps> {
                     </tr>
                 </thead>
 
-                <tbody ref={this.tableRef}>
+                <tbody ref={this._tableRef}>
                     {weeks.map((week, weekIndex) => (
                         <tr key={weekIndex} className="cui-calendar-table__row">
                             {week.map((day, dayIndex) => {

@@ -2,8 +2,8 @@ import { DateHelper } from "../../services/DateHelper";
 import { ICalendarHeaderProps } from "./interfaces/ICalendarHeaderProps";
 import "./style/calendar-header.css";
 
-const Calendarheader = (props: ICalendarHeaderProps) => {
-    const options: Intl.DateTimeFormatOptions = {
+const Calendarheader = (props: ICalendarHeaderProps): JSX.Element => {
+    const dateFormatOptions: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "short"
     }
@@ -29,7 +29,7 @@ const Calendarheader = (props: ICalendarHeaderProps) => {
             <button className="cui-calendar-header__button" onClick={onPrevYear}>{"<<"}</button>
             <button className="cui-calendar-header__button" onClick={onPrevMonth}>{"<"}</button>
             <p className="cui-calendar-header__date" aria-live="polite">
-                {new Intl.DateTimeFormat(undefined, options).format(props.date)}
+                {new Intl.DateTimeFormat(undefined, dateFormatOptions).format(props.date)}
             </p>
             <button className="cui-calendar-header__button" onClick={onNextMonth}>{">"}</button>
             <button className="cui-calendar-header__button" onClick={onNextYear}>{">>"}</button>

@@ -2,29 +2,28 @@ import React, { Component } from "react";
 import { IFocusTrapProps } from "./interfaces/IFocusTrapProps";
 
 class FocusTrap extends Component<IFocusTrapProps> {
-    private _ref: React.RefObject<HTMLDivElement>;
-    private _previousActiveElement: HTMLElement | null;
+    private _focusContainerRef: React.RefObject<HTMLDivElement>;
+    private _previousActiveElement: HTMLElement;
     private _firstFocusableElement: HTMLElement | null;
     private _lastFocusableElement: HTMLElement | null;
 
     constructor(props: IFocusTrapProps) {
         super(props);
 
-        this._ref = React.createRef();
-        this._previousActiveElement = null;
+        this._focusContainerRef = React.createRef();
+        this._previousActiveElement = document.activeElement as HTMLElement;
         this._firstFocusableElement = null;
         this._lastFocusableElement = null;
     }
 
     public componentDidMount(): void {
-        const modal = this._ref.current;
+        const focusContainer = this._focusContainerRef.current;
 
-        if (modal !== null) {
-            const focusableContent = modal.querySelectorAll(
+        if (focusContainer !== null) {
+            const focusableContent = focusContainer.querySelectorAll(
                 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
             );
 
-            this._previousActiveElement = document.activeElement as HTMLElement;
             this._firstFocusableElement = focusableContent[0] as HTMLElement;
             this._lastFocusableElement = focusableContent[focusableContent.length - 1] as HTMLElement;
 
@@ -35,7 +34,7 @@ class FocusTrap extends Component<IFocusTrapProps> {
     }
 
     public componentWillUnmount(): void {
-        this._previousActiveElement?.focus();
+        this._previousActiveElement.focus();
         document.removeEventListener("keydown", this._handleKeyDown);
         document.removeEventListener("mousedown", this._handleMouseDown);
     }
@@ -44,7 +43,7 @@ class FocusTrap extends Component<IFocusTrapProps> {
         const className = this.props.className !== undefined ? this.props.className : "";
 
         return (
-            <div className={className} ref={this._ref}>
+            <div className={className} ref={this._focusContainerRef}>
                 {this.props.children}
             </div>
         );
@@ -72,12 +71,12 @@ class FocusTrap extends Component<IFocusTrapProps> {
     }
 
     private _handleMouseDown = (event: MouseEvent) => {
-        if (this._ref.current === null || !(event.target instanceof Element)) {
+        if (this._focusContainerRef.current === null || !(event.target instanceof Element)) {
             return;
         }
 
-        const isTargetOutsideElement = !this._ref.current.contains(event.target);
-        const isTargetPreviousActiveElement = this._previousActiveElement?.contains(event.target);
+        const isTargetOutsideElement = !this._focusContainerRef.current.contains(event.target);
+        const isTargetPreviousActiveElement = this._previousActiveElement.contains(event.target);
 
         if (this.props.clickOutsideDeactivates && isTargetOutsideElement && !isTargetPreviousActiveElement) {
             this.props.onDeactivate();

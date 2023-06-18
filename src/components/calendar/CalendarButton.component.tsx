@@ -3,21 +3,21 @@ import { ICalendarButtonsProps } from "./interfaces/ICalendarButtonProps";
 import "./style/calendar-button.css";
 
 class CalendarButton extends Component<ICalendarButtonsProps> {
-    private _ref = React.createRef<HTMLButtonElement>();
-
-    constructor(props: ICalendarButtonsProps) {
-        super(props);
-    }
+    private _buttonRef = React.createRef<HTMLButtonElement>();
 
     componentDidMount(): void {
-        if (this.props.focus) {
-            this._ref.current?.focus();
+        const button = this._buttonRef.current;
+
+        if (this.props.focus && button !== null) {
+            button.focus();
         }
     }
 
-    componentDidUpdate(): void {
-        if (this.props.focus) {
-            this._ref.current?.focus();
+    componentDidUpdate(prevProps: Readonly<ICalendarButtonsProps>): void {
+        const button = this._buttonRef.current;
+
+        if (prevProps.focus !== this.props.focus && this.props.focus && button !== null) {
+            button.focus();
         }
     }
 
@@ -28,7 +28,7 @@ class CalendarButton extends Component<ICalendarButtonsProps> {
 
         return (
             <button
-                ref={this._ref}
+                ref={this._buttonRef}
                 className={`cui-calendar-button ${propClass} ${activeClass}`}
                 onClick={this.props.onClick}
                 tabIndex={tabIndex}>

@@ -29,7 +29,6 @@ class App extends Component<{}, IAppState> {
             date: date,
             showCalendar: false
         });
-        console.log("close");
     }
 
     handleClose = () => {
@@ -39,14 +38,13 @@ class App extends Component<{}, IAppState> {
     }
 
     toggleCalendar = () => {
-        console.log(this.state.showCalendar)
         this.setState({
             showCalendar: !this.state.showCalendar
         });
     }
 
     render() {
-        const options: Intl.DateTimeFormatOptions = {
+        const dateFormatOptions: Intl.DateTimeFormatOptions = {
             day: "numeric",
             month: "long",
             year: "numeric",
@@ -58,7 +56,7 @@ class App extends Component<{}, IAppState> {
         return (
             <>
                 <p>React Calendar</p>
-                <p>Selected Date: {new Intl.DateTimeFormat(undefined, options).format(this.state.date)}</p>
+                <p>Selected Date: {new Intl.DateTimeFormat(undefined, dateFormatOptions).format(this.state.date)}</p>
                 <button onClick={this.toggleCalendar}>Show Calendar</button>
                 {this.state.showCalendar && (
                     <CalendarModal
