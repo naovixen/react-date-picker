@@ -32,7 +32,7 @@ export class DateHelper {
     private static _hour = 60 * this._minute;
     private static _daysInWeek = 7;
 
-    public static isLeapYear = (year: number) => {
+    public static isLeapYear = (year: number): boolean => {
         return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
     }
 
@@ -50,8 +50,8 @@ export class DateHelper {
         return days;
     }
 
-    public static getSuffixedDaysInPrevMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
-        const remaining = this._getSuffixedDaysInPrevMonthCount(date, firstDayOfWeek);
+    public static getPrefixedDaysInPrevMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
+        const remaining = this._getPrefixedDaysInPrevMonthCount(date, firstDayOfWeek);
         const end = this._getEndOfMonth(this.sub(date, { months: 1 })).getDate();
         const start = end - remaining + 1;
         let days = [];
@@ -61,8 +61,8 @@ export class DateHelper {
         return days;
     }
 
-    public static getPrefixedDaysInNextMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
-        const remaining = this._getPrefixedDaysInNextMonthCount(date, firstDayOfWeek);
+    public static getSuffixedDaysInNextMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
+        const remaining = this._getSuffixedDaysInNextMonthCount(date, firstDayOfWeek);
         let days = [];
         for (let i = 1; i <= remaining; i++) {
             days.push(i);
@@ -75,7 +75,7 @@ export class DateHelper {
         const prevMonth = this.sub(newDate, { months: 1 }).getMonth();
         const nextMonth = this.add(newDate, { months: 1 }).getMonth();
 
-        const daysOfPrevMonth: Array<IDayInfo> = this.getSuffixedDaysInPrevMonth(newDate, firstDayOfWeek).map((day) => ({
+        const daysOfPrevMonth: Array<IDayInfo> = this.getPrefixedDaysInPrevMonth(newDate, firstDayOfWeek).map((day) => ({
             number: day,
             month: prevMonth
         }));
@@ -85,7 +85,7 @@ export class DateHelper {
             month: newDate.getMonth()
         }));
 
-        const daysOfNextMonth: Array<IDayInfo> = this.getPrefixedDaysInNextMonth(newDate, firstDayOfWeek).map((day) => ({
+        const daysOfNextMonth: Array<IDayInfo> = this.getSuffixedDaysInNextMonth(newDate, firstDayOfWeek).map((day) => ({
             number: day,
             month: nextMonth
         }));
@@ -174,21 +174,21 @@ export class DateHelper {
 
     private static _orderPrefixedDaysOfWeek(firstDayOfWeek: Day): Array<number> {
         const array = [...Array(this._daysInWeek).keys()];
-        return this._shiftArrayForward(array, firstDayOfWeek);
+        return this._shiftArrayBackward(array, firstDayOfWeek);
     }
 
     private static _orderSuffixedDaysOfWeek(firstDayOfWeek: Day): Array<number> {
         const array = [...Array(this._daysInWeek).keys()];
-        return this._shiftArrayBackward(array, firstDayOfWeek);
+        return this._shiftArrayForward(array, firstDayOfWeek);
     }
 
-    private static _getSuffixedDaysInPrevMonthCount(date: Date, firstDayOfWeek: number): number {
-        const index = this._orderPrefixedDaysOfWeek(firstDayOfWeek)
+    private static _getPrefixedDaysInPrevMonthCount(date: Date, firstDayOfWeek: number): number {
+        const index = this._orderSuffixedDaysOfWeek(firstDayOfWeek)
         return index[this._getStartOfMonth(date).getDay()];
     }
 
-    private static _getPrefixedDaysInNextMonthCount(date: Date, firstDayOfWeek: number): number {
-        const index = this._orderSuffixedDaysOfWeek(firstDayOfWeek)
+    private static _getSuffixedDaysInNextMonthCount(date: Date, firstDayOfWeek: number): number {
+        const index = this._orderPrefixedDaysOfWeek(firstDayOfWeek)
         return index[6 - this._getEndOfMonth(date).getDay()];
     }
 
@@ -299,11 +299,11 @@ export class DateHelper {
         return newDate;
     }
 
-    private static _shiftArrayBackward(array: Array<any>, amount: number) {
+    private static _shiftArrayBackward<T>(array: Array<T>, amount: number): Array<T> {
         return array.slice(amount).concat(array.slice(0, amount))
     }
 
-    private static _shiftArrayForward(array: Array<any>, amount: number) {
+    private static _shiftArrayForward<T>(array: Array<T>, amount: number): Array<T> {
         return array.slice(array.length - amount).concat(array.slice(0, array.length - amount));
     }
 
