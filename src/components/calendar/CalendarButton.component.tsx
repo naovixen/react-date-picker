@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import { ICalendarButtonsProps } from "./interfaces/ICalendarButtonProps";
+import React, { Component, RefObject } from "react";
+import { ICalendarButtonProps } from "./interfaces/ICalendarButtonProps";
 import "./style/calendar-button.css";
 
-class CalendarButton extends Component<ICalendarButtonsProps> {
-    private _buttonRef = React.createRef<HTMLButtonElement>();
+export class CalendarButton extends Component<ICalendarButtonProps> {
+    private readonly _buttonRef: RefObject<HTMLButtonElement> = React.createRef<HTMLButtonElement>();
 
-    componentDidMount(): void {
+    public componentDidMount(): void {
         const button = this._buttonRef.current;
 
         if (this.props.focus && button !== null) {
@@ -13,7 +13,7 @@ class CalendarButton extends Component<ICalendarButtonsProps> {
         }
     }
 
-    componentDidUpdate(prevProps: Readonly<ICalendarButtonsProps>): void {
+    public componentDidUpdate(prevProps: Readonly<ICalendarButtonProps>): void {
         const button = this._buttonRef.current;
 
         if (prevProps.focus !== this.props.focus && this.props.focus && button !== null) {
@@ -21,21 +21,15 @@ class CalendarButton extends Component<ICalendarButtonsProps> {
         }
     }
 
-    render() {
-        const propClass = this.props.className !== undefined ? this.props.className : "";
-        const activeClass = this.props.active ? "cui-calendar-button--active" : "";
-        const tabIndex = this.props.active ? 0 : -1;
-
+    public render(): JSX.Element {
         return (
             <button
                 ref={this._buttonRef}
-                className={`cui-calendar-button ${propClass} ${activeClass}`}
+                className={`cui-calendar-button ${this.props.className} ${this.props.active ? "cui-calendar-button--active" : ""}`}
                 onClick={this.props.onClick}
-                tabIndex={tabIndex}>
+                tabIndex={this.props.active ? 0 : -1}>
                 {this.props.children}
             </button>
         );
     }
 }
-
-export default CalendarButton;

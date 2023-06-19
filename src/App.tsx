@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import DateInput from "./components/date-input/DateInput.component";
-import CalendarModal from "./components/calendar/CalendarModal.component";
-import { Day } from "./enums/Day";
+import { DateInput } from "./components/date-input/DateInput.component";
+import { CalendarModal } from "./components/calendar/CalendarModal.component";
+import { Days } from "./enums/Days";
 
 interface IAppState {
     date: Date;
@@ -18,32 +18,32 @@ class App extends Component<{}, IAppState> {
         }
     }
 
-    handleConfirm = (date: Date) => {
+    public handleConfirm = (date: Date): void => {
         this.setState({
             date: date
         });
     }
 
-    handleConfirmAndClose = (date: Date) => {
+    public handleConfirmAndClose = (date: Date): void => {
         this.setState({
             date: date,
             showCalendar: false
         });
     }
 
-    handleClose = () => {
+    public handleClose = (): void => {
         this.setState({
             showCalendar: false
         });
     }
 
-    toggleCalendar = () => {
+    public toggleCalendar = (): void => {
         this.setState({
             showCalendar: !this.state.showCalendar
         });
     }
 
-    render() {
+    public render(): JSX.Element {
         const dateFormatOptions: Intl.DateTimeFormatOptions = {
             day: "numeric",
             month: "long",
@@ -63,7 +63,7 @@ class App extends Component<{}, IAppState> {
                         onConfirm={this.handleConfirm}
                         onConfirmAndClose={this.handleConfirmAndClose}
                         onClose={this.handleClose}
-                        firstDayOfWeek={Day.Monday}
+                        firstDayOfWeek={Days.Monday}
                     />
                 )}
                 <p>React Date Input</p>

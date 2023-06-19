@@ -1,7 +1,7 @@
 import { IDateInputProps } from "./interfaces/IDateInputProps";
 import "./style/date-input.css";
 
-const DateInput = (props: IDateInputProps) => {
+export const DateInput = (props: IDateInputProps) => {
     return (
         <div>
             <input placeholder="dd" type="text" inputMode="numeric" />
@@ -10,5 +10,3 @@ const DateInput = (props: IDateInputProps) => {
         </div>
     )
 }
-
-export default DateInput

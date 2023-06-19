@@ -1,38 +1,30 @@
 import React, { Component } from "react";
-import Calendarheader from "./CalendarHeader.component";
-import CalendarTable from "./CalendarTable.component";
-import FocusTrap from "../focus-trap/FocusTrap.component";
-import { Day } from "../../enums/Day";
+import { Days } from "../../enums/Days";
+import { Calendarheader } from "./CalendarHeader.component";
+import { CalendarTable } from "./CalendarTable.component";
+import { FocusTrap } from "../focus-trap/FocusTrap.component";
 import { ICalendarModalProps } from "./interfaces/ICalendarModalProps";
 import { ICalendarModalState } from "./interfaces/ICalendarModalState";
 import "./style/calendar-modal.css";
 
-class CalendarModal extends Component<ICalendarModalProps, ICalendarModalState> {
+export class CalendarModal extends Component<ICalendarModalProps, ICalendarModalState> {
+    public readonly handleClick: (date: Date) => void;
+    public readonly handleChange: (date: Date) => void;
+
     constructor(props: ICalendarModalProps) {
         super(props);
+
+        this.handleClick = this._handleClick.bind(this);
+        this.handleChange = this._handleChange.bind(this);
 
         this.state = {
             date: new Date(),
             shouldFocusDate: true
-        }
-    }
-
-    public handleClick = (date: Date): void => {
-        this.setState({
-            date: date,
-            shouldFocusDate: false
-        });
-    }
-
-    public handleChange = (date: Date): void => {
-        this.setState({
-            date: date,
-            shouldFocusDate: true
-        });
+        };
     }
 
     public render(): JSX.Element {
-        const firstDayOfWeek = this.props.firstDayOfWeek !== undefined ? this.props.firstDayOfWeek : Day.Monday;
+        const firstDayOfWeek = this.props.firstDayOfWeek !== undefined ? this.props.firstDayOfWeek : Days.Monday;
 
         return (
             <FocusTrap className="cui-calendar-modal" clickOutsideDeactivates={true} onDeactivate={this.props.onClose}>
@@ -53,6 +45,18 @@ class CalendarModal extends Component<ICalendarModalProps, ICalendarModalState> 
             </FocusTrap>
         );
     }
-}
 
-export default CalendarModal
+    private _handleClick(date: Date): void {
+        this.setState({
+            date: date,
+            shouldFocusDate: false
+        });
+    }
+
+    private _handleChange(date: Date): void {
+        this.setState({
+            date: date,
+            shouldFocusDate: true
+        });
+    }
+}

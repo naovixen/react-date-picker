@@ -1,8 +1,9 @@
+import React from "react";
 import { DateHelper } from "../../services/DateHelper";
 import { ICalendarHeaderProps } from "./interfaces/ICalendarHeaderProps";
 import "./style/calendar-header.css";
 
-const Calendarheader = (props: ICalendarHeaderProps): JSX.Element => {
+export const Calendarheader = (props: ICalendarHeaderProps): JSX.Element => {
     const dateFormatOptions: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "short"
@@ -36,5 +37,3 @@ const Calendarheader = (props: ICalendarHeaderProps): JSX.Element => {
         </div>
     );
 }
-
-export default Calendarheader;

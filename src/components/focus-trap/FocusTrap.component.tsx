@@ -1,81 +1,83 @@
 import React, { Component } from "react";
 import { IFocusTrapProps } from "./interfaces/IFocusTrapProps";
 
-class FocusTrap extends Component<IFocusTrapProps> {
-    private _focusContainerRef: React.RefObject<HTMLDivElement>;
-    private _previousActiveElement: HTMLElement;
+export class FocusTrap extends Component<IFocusTrapProps> {
+    public readonly handleKeyDown: (event: KeyboardEvent) => void;
+    public readonly handleMouseDown: (event: MouseEvent) => void;
+    private readonly _reference: React.RefObject<HTMLDivElement>;
+    private readonly _previousActiveElement: HTMLElement;
     private _firstFocusableElement: HTMLElement | null;
     private _lastFocusableElement: HTMLElement | null;
 
     constructor(props: IFocusTrapProps) {
         super(props);
 
-        this._focusContainerRef = React.createRef();
+        this.handleKeyDown = this._handleKeyDown.bind(this);
+        this.handleMouseDown = this._handleMouseDown.bind(this);
+        this._reference = React.createRef();
         this._previousActiveElement = document.activeElement as HTMLElement;
         this._firstFocusableElement = null;
         this._lastFocusableElement = null;
     }
 
     public componentDidMount(): void {
-        const focusContainer = this._focusContainerRef.current;
+        const focusContainer = this._reference.current;
 
         if (focusContainer !== null) {
             const focusableContent = focusContainer.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
             );
 
             this._firstFocusableElement = focusableContent[0] as HTMLElement;
             this._lastFocusableElement = focusableContent[focusableContent.length - 1] as HTMLElement;
 
             this._firstFocusableElement.focus();
-            document.addEventListener("keydown", this._handleKeyDown);
-            document.addEventListener("mousedown", this._handleMouseDown);
+            document.body.addEventListener("keydown", this.handleKeyDown);
+            document.body.addEventListener("mousedown", this.handleMouseDown);
         }
     }
 
     public componentWillUnmount(): void {
         this._previousActiveElement.focus();
-        document.removeEventListener("keydown", this._handleKeyDown);
-        document.removeEventListener("mousedown", this._handleMouseDown);
+        document.body.removeEventListener("keydown", this.handleKeyDown);
+        document.body.removeEventListener("mousedown", this.handleMouseDown);
     }
 
     public render(): JSX.Element {
-        const className = this.props.className !== undefined ? this.props.className : "";
-
         return (
-            <div className={className} ref={this._focusContainerRef}>
+            <div className={this.props.className} ref={this._reference}>
                 {this.props.children}
             </div>
         );
     }
 
-    private _handleKeyDown = (event: KeyboardEvent) => {
+    private _handleKeyDown(event: KeyboardEvent): void {
         if (event.key === "Escape") {
             this.props.onDeactivate();
         }
 
-        if (event.key === 'Tab') {
+        if (event.key === "Tab") {
             const isFirstElementActive = document.activeElement === this._firstFocusableElement;
             const isLastElementActive = document.activeElement === this._lastFocusableElement;
 
             if (event.shiftKey) {
-                if (isFirstElementActive) {
-                    this._lastFocusableElement?.focus();
+                if (isFirstElementActive && this._lastFocusableElement !== null) {
+                    this._lastFocusableElement.focus();
                     event.preventDefault();
                 }
-            } else if (isLastElementActive) {
-                this._firstFocusableElement?.focus();
+            } else if (isLastElementActive && this._firstFocusableElement !== null) {
+                this._firstFocusableElement.focus();
                 event.preventDefault();
             }
         }
     }
 
-    private _handleMouseDown = (event: MouseEvent) => {
-        if (this._focusContainerRef.current === null || !(event.target instanceof Element)) {
+    private _handleMouseDown(event: MouseEvent): void {
+        if (this._reference.current === null || !(event.target instanceof Element)) {
             return;
         }
 
-        const isTargetOutsideElement = !this._focusContainerRef.current.contains(event.target);
+        const isTargetOutsideElement = !this._reference.current.contains(event.target);
         const isTargetPreviousActiveElement = this._previousActiveElement.contains(event.target);
 
         if (this.props.clickOutsideDeactivates && isTargetOutsideElement && !isTargetPreviousActiveElement) {
@@ -83,5 +85,3 @@ class FocusTrap extends Component<IFocusTrapProps> {
         }
     }
 }
-
-export default FocusTrap;

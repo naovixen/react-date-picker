@@ -1,4 +1,4 @@
-import { Day } from "../enums/Day";
+import { Days } from "../enums/Days";
 
 interface IDateSetOptions {
     year?: number;
@@ -22,75 +22,75 @@ interface IDayInfo {
 }
 
 export class DateHelper {
-    private static _second = 1000;
-    private static _minute = 60 * this._second;
-    private static _hour = 60 * this._minute;
-    private static _daysInWeek = 7;
+    private static readonly _second: number = 1000;
+    private static readonly _minute: number = 60 * DateHelper._second;
+    private static readonly _hour: number = 60 * DateHelper._minute;
+    private static readonly _daysInWeek: number = 7;
 
-    public static isLeapYear = (year: number): boolean => {
+    public static isLeapYear(year: number): boolean {
         return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
     }
 
-    public static getDaysOfWeekStrings = (firstDayOfWeek: Day): Array<string> => {
+    public static getDaysOfWeekStrings(firstDayOfWeek: Days): Array<string> {
         // Replace for i18n
         const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        return this._shiftArrayBackward(days, firstDayOfWeek);
+        return DateHelper._shiftArrayBackward(days, firstDayOfWeek);
     }
 
-    public static getDaysInMonth = (date: Date): Array<number> => {
-        let days = [];
-        for (let i = 1; i <= this._getDaysInMonthCount(date); i++) {
+    public static getDaysInMonth(date: Date): Array<number> {
+        const days = [];
+        for (let i = 1; i <= DateHelper._getDaysInMonthCount(date); i++) {
             days.push(i);
         }
         return days;
     }
 
-    public static getPrefixedDaysInPrevMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
-        const remaining = this._getPrefixedDaysInPrevMonthCount(date, firstDayOfWeek);
-        const end = this._getEndOfMonth(this.sub(date, { months: 1 })).getDate();
+    public static getPrefixedDaysInPrevMonth(date: Date, firstDayOfWeek: Days): Array<number> {
+        const remaining = DateHelper._getPrefixedDaysInPrevMonthCount(date, firstDayOfWeek);
+        const end = DateHelper._getEndOfMonth(DateHelper.sub(date, { months: 1 })).getDate();
         const start = end - remaining + 1;
-        let days = [];
+        const days = [];
         for (let i = start; i <= end; i++) {
             days.push(i);
         }
         return days;
     }
 
-    public static getSuffixedDaysInNextMonth = (date: Date, firstDayOfWeek: Day): Array<number> => {
-        const remaining = this._getSuffixedDaysInNextMonthCount(date, firstDayOfWeek);
-        let days = [];
+    public static getSuffixedDaysInNextMonth(date: Date, firstDayOfWeek: Days): Array<number> {
+        const remaining = DateHelper._getSuffixedDaysInNextMonthCount(date, firstDayOfWeek);
+        const days = [];
         for (let i = 1; i <= remaining; i++) {
             days.push(i);
         }
         return days;
     }
 
-    public static getWeeksInMonth = (date: Date, firstDayOfWeek: Day): Array<Array<IDayInfo>> => {
+    public static getWeeksInMonth(date: Date, firstDayOfWeek: Days): Array<Array<IDayInfo>> {
         const newDate = new Date(date);
-        const prevMonth = this.sub(newDate, { months: 1 }).getMonth();
-        const nextMonth = this.add(newDate, { months: 1 }).getMonth();
+        const prevMonth = DateHelper.sub(newDate, { months: 1 }).getMonth();
+        const nextMonth = DateHelper.add(newDate, { months: 1 }).getMonth();
 
-        const daysOfPrevMonth: Array<IDayInfo> = this.getPrefixedDaysInPrevMonth(newDate, firstDayOfWeek).map((day) => ({
-            number: day,
-            month: prevMonth
+        const daysOfPrevMonth: Array<IDayInfo> = DateHelper.getPrefixedDaysInPrevMonth(newDate, firstDayOfWeek).map((day) => ({
+            month: prevMonth,
+            number: day
         }));
 
-        const daysOfCurrentMonth: Array<IDayInfo> = this.getDaysInMonth(newDate).map((day) => ({
-            number: day,
-            month: newDate.getMonth()
+        const daysOfCurrentMonth: Array<IDayInfo> = DateHelper.getDaysInMonth(newDate).map((day) => ({
+            month: newDate.getMonth(),
+            number: day
         }));
 
-        const daysOfNextMonth: Array<IDayInfo> = this.getSuffixedDaysInNextMonth(newDate, firstDayOfWeek).map((day) => ({
-            number: day,
-            month: nextMonth
+        const daysOfNextMonth: Array<IDayInfo> = DateHelper.getSuffixedDaysInNextMonth(newDate, firstDayOfWeek).map((day) => ({
+            month: nextMonth,
+            number: day
         }));
 
         const allDays = [daysOfPrevMonth, daysOfCurrentMonth, daysOfNextMonth].flat();
-        return this._splitArrayIntoChunks(allDays, this._daysInWeek);
+        return DateHelper._splitArrayIntoChunks(allDays, DateHelper._daysInWeek);
     }
 
-    public static set = (date: Date, options: IDateSetOptions): Date => {
-        let newDate = new Date(date);
+    public static set(date: Date, options: IDateSetOptions): Date {
+        const newDate = new Date(date);
 
         if (options.month !== undefined || options.day !== undefined) {
             newDate.setMonth(options.month ?? newDate.getMonth(), options.day ?? newDate.getDate());
@@ -103,92 +103,92 @@ export class DateHelper {
         return newDate;
     }
 
-    public static add = (date: Date, options: IDateOptions): Date => {
+    public static add(date: Date, options: IDateOptions): Date {
         let newDate = new Date(date);
 
         if (options.seconds !== undefined) {
-            newDate = this._addSeconds(newDate, options.seconds);
+            newDate = DateHelper._addSeconds(newDate, options.seconds);
         }
 
         if (options.minutes !== undefined) {
-            newDate = this._addMinutes(newDate, options.minutes);
+            newDate = DateHelper._addMinutes(newDate, options.minutes);
         }
 
         if (options.hours !== undefined) {
-            newDate = this._addHours(newDate, options.hours);
+            newDate = DateHelper._addHours(newDate, options.hours);
         }
 
         if (options.days !== undefined) {
-            newDate = this._addDays(newDate, options.days);
+            newDate = DateHelper._addDays(newDate, options.days);
         }
 
         if (options.weeks !== undefined) {
-            newDate = this._addWeeks(newDate, options.weeks);
+            newDate = DateHelper._addWeeks(newDate, options.weeks);
         }
 
         if (options.months !== undefined) {
-            newDate = this._addMonths(newDate, options.months);
+            newDate = DateHelper._addMonths(newDate, options.months);
         }
 
         if (options.years !== undefined) {
-            newDate = this._addYears(newDate, options.years);
+            newDate = DateHelper._addYears(newDate, options.years);
         }
 
         return newDate;
     }
 
-    public static sub = (date: Date, options: IDateOptions): Date => {
+    public static sub(date: Date, options: IDateOptions): Date {
         let newDate = new Date(date);
 
         if (options.seconds !== undefined) {
-            newDate = this._subtractSeconds(newDate, options.seconds);
+            newDate = DateHelper._subtractSeconds(newDate, options.seconds);
         }
 
         if (options.minutes !== undefined) {
-            newDate = this._subtractMinutes(newDate, options.minutes);
+            newDate = DateHelper._subtractMinutes(newDate, options.minutes);
         }
 
         if (options.hours !== undefined) {
-            newDate = this._subtractHours(newDate, options.hours);
+            newDate = DateHelper._subtractHours(newDate, options.hours);
         }
 
         if (options.days !== undefined) {
-            newDate = this._subtractDays(newDate, options.days);
+            newDate = DateHelper._subtractDays(newDate, options.days);
         }
 
         if (options.weeks !== undefined) {
-            newDate = this._subtractWeeks(newDate, options.weeks);
+            newDate = DateHelper._subtractWeeks(newDate, options.weeks);
         }
 
         if (options.months !== undefined) {
-            newDate = this._subtractMonths(newDate, options.months);
+            newDate = DateHelper._subtractMonths(newDate, options.months);
         }
 
         if (options.years !== undefined) {
-            newDate = this._subtractYears(newDate, options.years);
+            newDate = DateHelper._subtractYears(newDate, options.years);
         }
 
         return newDate;
     }
 
-    private static _orderPrefixedDaysOfWeek(firstDayOfWeek: Day): Array<number> {
-        const array = [...Array(this._daysInWeek).keys()];
-        return this._shiftArrayBackward(array, firstDayOfWeek);
+    private static _orderPrefixedDaysOfWeek(firstDayOfWeek: Days): Array<number> {
+        const array = [...Array(DateHelper._daysInWeek).keys()];
+        return DateHelper._shiftArrayBackward(array, firstDayOfWeek);
     }
 
-    private static _orderSuffixedDaysOfWeek(firstDayOfWeek: Day): Array<number> {
-        const array = [...Array(this._daysInWeek).keys()];
-        return this._shiftArrayForward(array, firstDayOfWeek);
+    private static _orderSuffixedDaysOfWeek(firstDayOfWeek: Days): Array<number> {
+        const array = [...Array(DateHelper._daysInWeek).keys()];
+        return DateHelper._shiftArrayForward(array, firstDayOfWeek);
     }
 
     private static _getPrefixedDaysInPrevMonthCount(date: Date, firstDayOfWeek: number): number {
-        const index = this._orderSuffixedDaysOfWeek(firstDayOfWeek)
-        return index[this._getStartOfMonth(date).getDay()];
+        const index = DateHelper._orderSuffixedDaysOfWeek(firstDayOfWeek);
+        return index[DateHelper._getStartOfMonth(date).getDay()];
     }
 
     private static _getSuffixedDaysInNextMonthCount(date: Date, firstDayOfWeek: number): number {
-        const index = this._orderPrefixedDaysOfWeek(firstDayOfWeek)
-        return index[6 - this._getEndOfMonth(date).getDay()];
+        const index = DateHelper._orderPrefixedDaysOfWeek(firstDayOfWeek);
+        return index[6 - DateHelper._getEndOfMonth(date).getDay()];
     }
 
     private static _getStartOfMonth(date: Date): Date {
@@ -201,105 +201,105 @@ export class DateHelper {
         return newDate;
     }
 
-    private static _getDaysInMonthCount = (date: Date): number => {
+    private static _getDaysInMonthCount(date: Date): number {
         const year = date.getFullYear();
         const month = date.getMonth();
 
-        return [31, (this.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+        return [31, (DateHelper.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     }
 
-    private static _subtractYears = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
+    private static _subtractYears(date: Date, amount: number): Date {
+        const newDate = new Date(date);
         newDate.setFullYear(newDate.getFullYear() - amount);
         return newDate;
     }
 
-    private static _addYears = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
+    private static _addYears(date: Date, amount: number): Date {
+        const newDate = new Date(date);
         newDate.setFullYear(newDate.getFullYear() + amount);
         return newDate;
     }
 
-    private static _subtractMonths = (date: Date, amount: number): Date => {
+    private static _subtractMonths(date: Date, amount: number): Date {
         const newDate = new Date(date);
         const day = newDate.getDate();
         newDate.setDate(1);
         newDate.setMonth(newDate.getMonth() - amount);
-        newDate.setDate(Math.min(day, this._getDaysInMonthCount(newDate)));
+        newDate.setDate(Math.min(day, DateHelper._getDaysInMonthCount(newDate)));
         return newDate;
     }
 
-    private static _addMonths = (date: Date, amount: number): Date => {
+    private static _addMonths(date: Date, amount: number): Date {
         const newDate = new Date(date);
         const day = newDate.getDate();
         newDate.setDate(1);
         newDate.setMonth(newDate.getMonth() + amount);
-        newDate.setDate(Math.min(day, this._getDaysInMonthCount(newDate)));
+        newDate.setDate(Math.min(day, DateHelper._getDaysInMonthCount(newDate)));
         return newDate;
     }
 
-    private static _subtractWeeks = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setDate(newDate.getDate() - (amount * this._daysInWeek));
+    private static _subtractWeeks(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() - (amount * DateHelper._daysInWeek));
         return newDate;
     }
 
-    private static _addWeeks = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setDate(newDate.getDate() + (amount * this._daysInWeek));
+    private static _addWeeks(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + (amount * DateHelper._daysInWeek));
         return newDate;
     }
 
-    private static _subtractDays = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
+    private static _subtractDays(date: Date, amount: number): Date {
+        const newDate = new Date(date);
         newDate.setDate(newDate.getDate() - amount);
         return newDate;
     }
 
-    private static _addDays = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
+    private static _addDays(date: Date, amount: number): Date {
+        const newDate = new Date(date);
         newDate.setDate(newDate.getDate() + amount);
         return newDate;
     }
 
-    private static _subtractHours = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setTime(newDate.getTime() - (amount * this._hour));
+    private static _subtractHours(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setTime(newDate.getTime() - (amount * DateHelper._hour));
         return newDate;
     }
 
-    private static _addHours = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setTime(newDate.getTime() + (amount * this._hour));
+    private static _addHours(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setTime(newDate.getTime() + (amount * DateHelper._hour));
         return newDate;
     }
 
-    private static _subtractMinutes = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setTime(newDate.getTime() - (amount * this._minute));
+    private static _subtractMinutes(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setTime(newDate.getTime() - (amount * DateHelper._minute));
         return newDate;
     }
 
-    private static _addMinutes = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setTime(newDate.getTime() + (amount * this._minute));
+    private static _addMinutes(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setTime(newDate.getTime() + (amount * DateHelper._minute));
         return newDate;
     }
 
-    private static _subtractSeconds = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setTime(newDate.getTime() - (amount * this._second));
+    private static _subtractSeconds(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setTime(newDate.getTime() - (amount * DateHelper._second));
         return newDate;
     }
 
-    private static _addSeconds = (date: Date, amount: number): Date => {
-        const newDate = new Date(date)
-        newDate.setTime(newDate.getTime() + (amount * this._second));
+    private static _addSeconds(date: Date, amount: number): Date {
+        const newDate = new Date(date);
+        newDate.setTime(newDate.getTime() + (amount * DateHelper._second));
         return newDate;
     }
 
     private static _shiftArrayBackward<T>(array: Array<T>, amount: number): Array<T> {
-        return array.slice(amount).concat(array.slice(0, amount))
+        return array.slice(amount).concat(array.slice(0, amount));
     }
 
     private static _shiftArrayForward<T>(array: Array<T>, amount: number): Array<T> {
